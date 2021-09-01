@@ -264,8 +264,16 @@ TODO screenshot
 
 Wait for TODO - Final indication of deployment
 
-Check the access Config map
+# See the result of the installation
+All the URLs, usernames and passwords allowing you to access installed capabilities are available in the config map of the deployment.
 
+Look into the access Config map using _OpenShift web console_:
+- In the menu on the left side click on _Workloads_ and _ConfigMaps_
+- Filter the config maps by name - just type _access_ into the filter
+- Click on the _icp4adeploy-cp4ba-access-info_ config map
+- Now you can see all the URLs, usernames and passwords providing access to the CP4BA components installed.
+
+TODO screenshot
 # Un-installation
 
 > **! WARNING !**
@@ -284,9 +292,8 @@ bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ibm-common-services # the main way for common services
 ```
 > Hint: You can download the force-uninstall.sh script and reduce amount of retries in it from the default value which is 30 to like 3 to reduce the execution time.
-
 # Hints and tips
-
+TODO
 ```
 oc whoami --show-console
 ```
