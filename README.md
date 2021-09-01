@@ -286,7 +286,7 @@ oc get no -l node-role.kubernetes.io/worker --no-headers -o name | xargs -I {} \
    -- chroot /host sh -c 'grep "^Domain = slnfsv4.coms" /etc/idmapd.conf || ( sed -i "s/.*Domain =.*/Domain = slnfsv4.com/g" /etc/idmapd.conf; nfsidmap -c; rpc.idmapd )'
 ```
 
-Use the operator instance to apply a custom resource on OpenShift web console by clicking _Operators_ > _Installed Operators_ > _IBM Cloud Pak for Business Automation_ > _CP4BA deployment_ tab > _Create ICP4ACluster_ blue button.
+Next, use the operator instance to apply a custom resource on OpenShift web console by clicking _Operators_ > _Installed Operators_ > _IBM Cloud Pak for Business Automation_ > _CP4BA deployment_ tab > _Create ICP4ACluster_ blue button.
 
 ![Operator - Create cluster](images/operator-create-cluster.png)
 
@@ -303,8 +303,6 @@ As mentioned before, the configuration is just piece of yaml which you can revie
 ![Operator - Cluster configuration](images/deployment-config-yaml.png)
 
 When you are done with your configuration, click on the blue _Create_ button in the bottom to start the installation. It may take couple of hours. Very personal experience is something between 3 and 6 hours depending on environment, cloud usage etc.
-
-Watch the pods appearing - across namespaces, sorted by Created
 
 Good indication of progress is live view of the pods across all namespaces in the OpenShift web console, sorted e.g. by _Created_ column.
 
@@ -335,18 +333,18 @@ This part is based on following documents:
 - https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
 
 > **! WARNING !**
-> The instructions below delete also IBM Common Services.
+> The instructions below delete also IBM Common Services. It is a complete cleanup of all underlying components also.
 
-Personal experience:
+Personal experience - proven method:
 - Delete your project - default cp4ba.
 - Wait for all pods in the project to be deleted.
-- In case the project will not be deleted and remains in terminated stage,  perform following cleanup procedure:
+- In case the project will not be deleted and remains in terminated stage,  perform additional cleanup procedure:
 ```
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ${NAMESPACE} # optional way for specific namespace
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n common-service # the main way for common services, this namespace not available on demo deployment
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ibm-common-services # the main way for common services
 ```
-> Hint: You can download the force-uninstall.sh script and reduce amount of retries in it from the default value which is 30 to like 3 to reduce the execution time.
+> Hint: You can download the force-uninstall.sh script e.g. using wget and reduce amount of retries in it from the default value which is 30 to like 3 to make the script running faster.
 # Owner
 Radek Šulc<br>
 <radek_sulc@cz.ibm.com><br>
