@@ -322,6 +322,10 @@ Look into the access Config map using _OpenShift web console_:
 Now you can see all the URLs, usernames and passwords providing access to the installed CP4BA components.
 
 ![Access config map - Search](images/access-config-map-content.png)
+
+As the installation does use self-signed certificates, you need in some cases accept the self-signed certificates to be able to work successfully with some URLs. The access information contains detailed information what to do which is useful.
+
+![Access config map - Search](images/access-config-map-accept-certs.png)
 # Un-installation
 
 This part is based on following documents:
