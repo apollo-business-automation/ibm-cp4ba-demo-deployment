@@ -344,7 +344,6 @@ bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n common-service # the main way for common services, this namespace not available on demo deployment
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ibm-common-services # the main way for common services
 ```
-> Hint: You can download the force-uninstall.sh script e.g. using wget and reduce amount of retries in it from the default value which is 30 to like 3 to make the script running faster.
 # Owner
 Radek Šulc<br>
 <radek_sulc@cz.ibm.com><br>
@@ -352,7 +351,7 @@ Software Engineer - Digital Business Automation<br>
 Technical Engagement Team - IBM CEE<br>
 
 # Credits
-Special thanks go to Jan Dušek and Fadi Sandakly. My colleagues and friends, for the expertise they shared with me and all the great support.
+Special thanks to my colleagues and friends Jan Dušek and Fadi Sandakly for  sharing their expertise, all the great support, cooperation and fun.
 
 # License
 The notebook found in this project are licensed under the [Apache License 2.0](LICENSE).
