@@ -1,8 +1,8 @@
-# Installation of Cloud Pak for Business Automation on containers - Demo pattern
+# Installation of Cloud Pak for Business Automation on containers - Demo deployment
 
 This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF002 (also called 21.2.2?).
 
-These notes have been created using official installation documentation hanging at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments. The sections highlighted in red in the screenshot below show the specific sections these notes are based on. There is no major difference. It is just a consolidated one-page description of the installation using Operator Hub, complemented with additional comments.
+These notes have been created using official installation documentation hanging at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments. The sections highlighted in red in the screenshot below show the specific sections these notes are based on. There is no major difference. It is just a consolidated, linearized, one-page description of the installation using Operator Hub, complemented with additional comments.
 
 ![IBM Docs - Used sections](images/ibm-docs-sections.png)
 
@@ -46,6 +46,8 @@ Two types of CP4BA deployments are available - _Demo_ and _Enterprise_.
 - Intended for project deployments from development to production.
 - Completely open to specific configurations depending on environment of the customer - databases, LDAP servers etc.
 - Requires more expertise and effort to install.
+
+Enterprise deployment is not a focus of this document.
 ## Installation procedure
 ### Preparing for a demo deployment
 First you need to have an Red Hat (RHEL), CentOS, or macOS environment allowing you to run the scripts and communicate with the OpenShift cluster.
@@ -225,7 +227,7 @@ And apply the yaml file just created.
 ```
 oc apply -f opencloud-operators-catalog.yaml
 ```
-In the OpenShift console, click _Operators_ and _OperatorHub_, enter _cp4a_ (or _cp4ba_) in the Filter by keyword box under All items. _IBM Cloud Pak for Business Automation_ operator appears. Click on it.
+In the OpenShift web console, click _Operators_ and _OperatorHub_, enter _cp4a_ (or _cp4ba_) in the Filter by keyword box under All items. _IBM Cloud Pak for Business Automation_ operator appears. Click on it.
 
 ![Find the Operator](images/find-operator.png)
 
@@ -254,7 +256,7 @@ Verify finishing of the deployment by checking that all of the pods are running.
 ```
 oc get pods
 ```
-Or alternatively with watch refreshing output e.g. every 5 seconds.
+Or alternatively with watch command refreshing output e.g. every 5 seconds.
 ```
 watch -n 5 oc get pods
 ```
@@ -274,7 +276,7 @@ All of them must have Status _Succeeded_.
 ### Installing the capabilities in Operator Hub
 This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployment-installing-capabilities-in-operator-hub.
 
-**The next one command is to be performed on ROKS only**
+**The next command needs to be performed on ROKS only!**
 Apply the no root squash command for Db2. This may take couple of minutes.
 ```
 oc get no -l node-role.kubernetes.io/worker --no-headers -o name | xargs -I {} \
@@ -282,41 +284,52 @@ oc get no -l node-role.kubernetes.io/worker --no-headers -o name | xargs -I {} \
    -- chroot /host sh -c 'grep "^Domain = slnfsv4.coms" /etc/idmapd.conf || ( sed -i "s/.*Domain =.*/Domain = slnfsv4.com/g" /etc/idmapd.conf; nfsidmap -c; rpc.idmapd )'
 ```
 
-Use the operator instance to apply a custom resource on OpenShift console by clicking _Operators_ > _Installed Operators_ > _IBM Cloud Pak for Business Automation_ > _CP4BA deployment_ tab > _Create ICP4ACluster_ blue button.
+Use the operator instance to apply a custom resource on OpenShift web console by clicking _Operators_ > _Installed Operators_ > _IBM Cloud Pak for Business Automation_ > _CP4BA deployment_ tab > _Create ICP4ACluster_ blue button.
 
 ![Operator - Create cluster](images/operator-create-cluster.png)
 
+The next screen allows you to select and configure CP4BA capabilities which are going to be installed. The final configuration depends on you. The configuration below asks to install all the capabilities with small exceptions like _IBM Enterprise Records_ and _IBM Content Collector for SAP_. Feel free to play around and select what you need. See the official documentation for details.
 
+![Operator - Cluster configuration](images/deployment-config-01.png)
+![Operator - Cluster configuration](images/deployment-config-02.png)
+![Operator - Cluster configuration](images/deployment-config-03.png)
+![Operator - Cluster configuration](images/deployment-config-04.png)
+![Operator - Cluster configuration](images/deployment-config-05.png)
 
-YAML view
+As mentioned before, the configuration is just piece of yaml which you can review and play around also in the pure yaml view.
 
-TODO screenshot
+![Operator - Cluster configuration](images/deployment-config-yaml.png)
 
-Select desired configuration - review the YAML file FYI
+When you are done with your configuration, click on the blue _Create_ button in the bottom to start the installation. It may take couple of hours. Very personal experience is something between 3 and 6 hours depending on environment, cloud usage etc.
 
 Watch the pods appearing - across namespaces, sorted by Created
 
-TODO screenshot
+Good indication of progress is live view of the pods across all namespaces in the OpenShift web console, sorted e.g. by _Created_ column.
 
-Wait for TODO - Final indication of deployment
+![Operator - Cluster configuration](images/list-pods-by-created.png)
 
-# See the result of the installation
+> Wait for TODO - best final indication of finished installation.
+# Review result of the installation
 All the URLs, usernames and passwords allowing you to access installed capabilities are available in the config map of the deployment.
 
 Look into the access Config map using _OpenShift web console_:
 - In the menu on the left side click on _Workloads_ and _ConfigMaps_
 - Filter the config maps by name - just type _access_ into the filter
 - Click on the _icp4adeploy-cp4ba-access-info_ config map
-- Now you can see all the URLs, usernames and passwords providing access to the CP4BA components installed.
 
-TODO screenshot
+![Access config map - Search](images/access-config-map-search.png)
+
+Now you can see all the URLs, usernames and passwords providing access to the installed CP4BA components.
+
+![Access config map - Search](images/access-config-map-content.png)
 # Un-installation
 
 > **! WARNING !**
 > The instructions below delete also IBM Common Services.
 
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-uninstalling-capabilities
-https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
+This part is based on following documents:
+- https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-uninstalling-capabilities
+- https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
 
 Personal experience:
 - Delete your project - default cp4ba.
@@ -328,9 +341,17 @@ bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ibm-common-services # the main way for common services
 ```
 > Hint: You can download the force-uninstall.sh script and reduce amount of retries in it from the default value which is 30 to like 3 to reduce the execution time.
-# Hints and tips
-TODO
-```
-oc whoami --show-console
-```
+# Owner
+Radek Šulc<br>
+<radek_sulc@cz.ibm.com><br>
+Software Engineer - Digital Business Automation<br>
+Technical Engagement Team - IBM CEE<br>
 
+# Credits
+Special thanks go to Jan Dušek and Fadi Sandakly. My colleagues and friends, for the expertise they shared with me and all the great support.
+
+# License
+The notebook found in this project are licensed under the [Apache License 2.0](LICENSE).
+
+# Notice
+© Copyright IBM Corporation 2020.
