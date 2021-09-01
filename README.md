@@ -1,6 +1,6 @@
 # Installation of Cloud Pak for Business Automation on containers - Demo pattern
 
-This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF001.
+This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF002 (also called 21.2.2?).
 
 These notes have been created using official installation documentation hanging at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments. The sections highlighted in red in the screenshot below show the specific sections these notes are based on. There is no major difference. It is just a consolidated one-page description of the installation using Operator Hub, complemented with additional comments.
 
@@ -68,8 +68,8 @@ tar -xvzf ibm-cp-automation-3.1.2.tgz
 cd ibm-cp-automation/inventory/cp4aOperatorSdk/files/deploy/crs
 tar -xvzf cert-k8s-21.0.2.tar
 ```
-### Setting up the cluster for Operator Hub
-This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-operator-hub, resp. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage.
+### Preparing the operator and log file storage
+This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage.
 
 Login to your OpenShift cluster.
 ```
@@ -176,7 +176,7 @@ Now bind the SCC to these service accounts:
 oc adm policy add-scc-to-user privileged -z ibm-cp4ba-privileged -n ${NAMESPACE}
 oc adm policy add-scc-to-user anyuid -z ibm-cp4ba-anyuid -n ${NAMESPACE}
 ```
-### Installing the capabilities in Operator Hub
+### Installing the IBM operator catalog
 This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-installing-operator-catalog.
 
 Add the CatalogSource resources to Operator Hub using yaml file below. The CatalogSource resources add the _IBM Operator Catalog_ to the OperatorHub, which depends on the catalog sources for _IBM Cloud Pak for Business Automation_ and _IBM Automation Foundation Services_.
@@ -233,26 +233,24 @@ Pop-up window with detail of the operator appears. You can read the details if i
 
 ![Install the operator - button](images/operator-install-button.png)
 
-Perform configuration of the operator.
-
-** IMPORTANT **
-
+Perform configuration of the operator as in the screenshot below and click on the _Install_ button.
+**! IMPORTANT !**
 Make sure you select the right version and select your namespace.
-Click Install
 
 ![Configure the Operator](images/operator-configuration.png)
 
 Now the operator is being installed. You can click on the _View installed Operators in Namespace <YOUR_NAMESPACE>_.
 
-TODO screenshot - in progress
-TODO screenshot - in finished
+![Operator being installed](images/operator-being-installed.png)
 
-Optional - Some output should be quickly visible in log of the operator in case you want to check the progress.
+Installation of the operator incl. downloading of the artifacts takes usually couple of minutes.
+
+Optional - Some output should be quickly visible in log of the operator in case you want to check progress of the installation in detail.
 ```
 oc logs -f deployment/ibm-cp4a-operator -c operator
 ```
 
-Verify the deployment by checking all of the pods are running. - All 8 pods need to be Running. It takes usually couple of minutes.
+Verify finishing of the deployment by checking that all of the pods are running. All 8 pods need to be Running.
 ```
 oc get pods
 ```
@@ -263,18 +261,21 @@ watch -n 5 oc get pods
 > **! IMPORTANT !**
 > Do not proceed further without al the pods in running and ready state - the _1/1_ in _READY_ column.
 
-Following Operators should be visible in "Installed Operators" (all in the specific namespace):
+Following Operators should be visible in OpenShift connsole - _Operators_ > _Installed Operators_ (all in the specific namespace):
 - IBM Automation Foundation Core
 - IBM Automation Foundation
 - IBM Cloud Pak foundational services
 - IBM Cloud Pak for Business Automation
 
-TODO screenshot
+All of them must have Status _Succeeded_.
 
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-installing-demo-deployment
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployment-installing-capabilities-in-operator-hub
+![Installed operators](images/operators-installed.png)
 
-On Red Hat OpenShift Kubernetes Service (ROKS) only, apply the no root squash command for Db2. This may take couple of minutes.
+### Installing the capabilities in Operator Hub
+This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployment-installing-capabilities-in-operator-hub.
+
+**The next one command is to be performed on ROKS only**
+Apply the no root squash command for Db2. This may take couple of minutes.
 ```
 oc get no -l node-role.kubernetes.io/worker --no-headers -o name | xargs -I {} \
    -- oc debug {} \
@@ -283,7 +284,9 @@ oc get no -l node-role.kubernetes.io/worker --no-headers -o name | xargs -I {} \
 
 Use the operator instance to apply a custom resource on OpenShift console by clicking _Operators_ > _Installed Operators_ > _IBM Cloud Pak for Business Automation_ > _CP4BA deployment_ tab > _Create ICP4ACluster_ blue button.
 
-TODO screenshot
+![Operator - Create cluster](images/operator-create-cluster.png)
+
+
 
 YAML view
 
