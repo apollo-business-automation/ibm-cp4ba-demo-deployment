@@ -16,7 +16,7 @@ Two types of OpenShift clusters have been tested, both version 4.7.x:
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud
 - "Home-made" OpenShift cluster created from scratch on top of RHEL and CoreOS virtual machines.
 
-The installation should behave the same on managed OpenShift clusters like [ROSA (Red Hat OpenShift Service on AWS)](https://aws.amazon.com/rosa/) and [Azure Red Hat OpenShift](https://azure.microsoft.com/services/openshift). Detailed testing is being in progress, with positive results so far. The only major difference actually seems to be in storage classes used for persistent volume claims which provide file systems to store data. The storage classes are always specific for particular environment and vendor. The right selection of storage classes must be performed during the installation.
+> The installation should behave the same on managed OpenShift clusters like [ROSA (Red Hat OpenShift Service on AWS)](https://aws.amazon.com/rosa/) and [Azure Red Hat OpenShift](https://azure.microsoft.com/services/openshift). Detailed testing is being in progress, with positive results so far. The only major difference actually seems to be in storage classes used for persistent volume claims which provide file systems to store data. The storage classes are always specific for particular environment and vendor. The right selection of storage classes must be performed during the installation.
 ## Pre-requisites
 1) OpenShift cluster sized according with the system requirements: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements.
 1) Software entitlement key available at https://myibm.ibm.com/products-services/containerlibrary
@@ -47,6 +47,7 @@ Two types of CP4BA deployments are available - _Demo_ and _Enterprise_.
 - Completely open to specific configurations depending on environment of the customer - databases, LDAP servers etc.
 - Requires more expertise and effort to install.
 ## Installation procedure
+### Preparing for a demo deployment
 First you need to have an Red Hat (RHEL), CentOS, or macOS environment allowing you to run the scripts and communicate with the OpenShift cluster.
 
 Follow this link https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment to install Kubernetes/OCP CLI and podman.
@@ -67,8 +68,8 @@ tar -xvzf ibm-cp-automation-3.1.2.tgz
 cd ibm-cp-automation/inventory/cp4aOperatorSdk/files/deploy/crs
 tar -xvzf cert-k8s-21.0.2.tar
 ```
-
-The next part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-operator-hub, resp. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage.
+### Setting up the cluster for Operator Hub
+This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-operator-hub, resp. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage.
 
 Login to your OpenShift cluster.
 ```
@@ -175,8 +176,8 @@ Now bind the SCC to these service accounts:
 oc adm policy add-scc-to-user privileged -z ibm-cp4ba-privileged -n ${NAMESPACE}
 oc adm policy add-scc-to-user anyuid -z ibm-cp4ba-anyuid -n ${NAMESPACE}
 ```
-
-Following part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-installing-operator-catalog.
+### Installing the capabilities in Operator Hub
+This part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-installing-operator-catalog.
 
 Add the CatalogSource resources to Operator Hub using yaml file below. The CatalogSource resources add the _IBM Operator Catalog_ to the OperatorHub, which depends on the catalog sources for _IBM Cloud Pak for Business Automation_ and _IBM Automation Foundation Services_.
 
@@ -224,21 +225,32 @@ And apply the yaml file just created.
 ```
 oc apply -f opencloud-operators-catalog.yaml
 ```
+In the OpenShift console, click _Operators_ and _OperatorHub_, enter _cp4a_ (or _cp4ba_) in the Filter by keyword box under All items. _IBM Cloud Pak for Business Automation_ operator appears. Click on it.
 
-In the OCP console, click _Operators_ and _OperatorHub_, enter _cp4a_ in the Filter by keyword box under All items. _IBM Cloud Pak for Business Automation_ operator appears. Click on it.
-
-TODO screenshot
+![Find the Operator](images/find-operator.png)
 
 Pop-up window with detail of the operator appears. You can read the details if interested and click on the blue _Install_ button on the top.
-Select your version and namespace!!!
+
+![Install the operator - button](images/operator-install-button.png)
+
+Perform configuration of the operator.
+
+** IMPORTANT **
+
+Make sure you select the right version and select your namespace.
 Click Install
 
-TODO screenshot
+![Configure the Operator](images/operator-configuration.png)
 
 Now the operator is being installed. You can click on the _View installed Operators in Namespace <YOUR_NAMESPACE>_.
 
 TODO screenshot - in progress
 TODO screenshot - in finished
+
+Optional - Some output should be quickly visible in log of the operator in case you want to check the progress.
+```
+oc logs -f deployment/ibm-cp4a-operator -c operator
+```
 
 Verify the deployment by checking all of the pods are running. - All 8 pods need to be Running. It takes usually couple of minutes.
 ```
@@ -251,16 +263,13 @@ watch -n 5 oc get pods
 > **! IMPORTANT !**
 > Do not proceed further without al the pods in running and ready state - the _1/1_ in _READY_ column.
 
-FYI - Also following Operators should be visible in "Installed Operators" (all in the specific namespace):
+Following Operators should be visible in "Installed Operators" (all in the specific namespace):
 - IBM Automation Foundation Core
 - IBM Automation Foundation
 - IBM Cloud Pak foundational services
 - IBM Cloud Pak for Business Automation
 
 TODO screenshot
-
-FYI - Some output should be quickly visible in log of the operator.
-oc logs -f deployment/ibm-cp4a-operator -c operator
 
 https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-installing-demo-deployment
 https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployment-installing-capabilities-in-operator-hub
