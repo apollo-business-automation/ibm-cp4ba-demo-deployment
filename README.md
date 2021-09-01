@@ -229,6 +229,8 @@ And apply the yaml file just created.
 ```
 oc apply -f opencloud-operators-catalog.yaml
 ```
+## Installing the operator
+
 In the OpenShift web console, click _Operators_ and _OperatorHub_, enter _cp4a_ (or _cp4ba_) in the Filter by keyword box under All items. _IBM Cloud Pak for Business Automation_ operator appears. Click on it.
 
 ![Find the Operator](images/find-operator.png)
@@ -249,21 +251,19 @@ Now the operator is being installed. You can click on the _View installed Operat
 
 Installation of the operator incl. downloading of the artifacts takes usually couple of minutes.
 
-Optional - Some output should be quickly visible in log of the operator in case you want to check progress of the installation in detail.
-```
-oc logs -f deployment/ibm-cp4a-operator -c operator
-```
-
 Verify finishing of the deployment by checking that all of the pods are running. All 8 pods need to be Running.
 ```
 oc get pods
 ```
+
 Or alternatively with watch command refreshing output e.g. every 5 seconds.
 ```
 watch -n 5 oc get pods
 ```
 > **! IMPORTANT !**
-> Do not proceed further without al the pods in running and ready state - the _1/1_ in _READY_ column.
+> Do not proceed further without all the pods in running and ready state - the _1/1_ in _READY_ column as in the screenshot below.
+
+![IBM Docs - Used sections](images/operator-installed-pods.png)
 
 Following Operators should be visible in OpenShift connsole - _Operators_ > _Installed Operators_ (all in the specific namespace):
 - IBM Automation Foundation Core
