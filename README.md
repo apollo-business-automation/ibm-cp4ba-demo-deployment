@@ -324,12 +324,12 @@ Now you can see all the URLs, usernames and passwords providing access to the in
 ![Access config map - Search](images/access-config-map-content.png)
 # Un-installation
 
-> **! WARNING !**
-> The instructions below delete also IBM Common Services.
-
 This part is based on following documents:
 - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-uninstalling-capabilities
 - https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
+
+> **! WARNING !**
+> The instructions below delete also IBM Common Services.
 
 Personal experience:
 - Delete your project - default cp4ba.
