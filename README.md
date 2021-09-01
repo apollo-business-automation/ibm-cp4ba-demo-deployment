@@ -1,6 +1,6 @@
 # Installation of Cloud Pak for Business Automation on containers - Demo deployment
 
-This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF002 (also called 21.2.2?).
+This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF002 (also called 21.2.2).
 
 These notes have been created using official installation documentation hanging at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments. The sections highlighted in red in the screenshot below show the specific sections these notes are based on. There is no major difference. It is just a consolidated, linearized, one-page description of the installation using Operator Hub, complemented with additional comments.
 
@@ -14,7 +14,7 @@ Please do not hesitate to create an issue here if needed. Your feedback is appre
 ## OpenShift clusters used for the installation
 Two types of OpenShift clusters have been tested, both version 4.7.x:
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud
-- "Home-made" OpenShift cluster created from scratch on top of RHEL and CoreOS virtual machines.
+- "Home-made" OpenShift cluster created from scratch on top of RHEL and CoreOS virtual machines
 
 > The installation should behave the same on managed OpenShift clusters like [ROSA (Red Hat OpenShift Service on AWS)](https://aws.amazon.com/rosa/) and [Azure Red Hat OpenShift](https://azure.microsoft.com/services/openshift). Detailed testing is being in progress, with positive results so far. The only major difference actually seems to be in storage classes used for persistent volume claims which provide file systems to store data. The storage classes are always specific for particular environment and vendor. The right selection of storage classes must be performed during the installation.
 ## Pre-requisites
@@ -114,16 +114,18 @@ You can check for status of the PVCs creation using:
 ```
 oc get pvc
 ```
+Or alternatively with watch command refreshing output e.g. every 5 seconds.
+```
+watch -n 5 oc get pvc
+```
+
 
 You want to see something like below with two PVCs created, with status _Bound_. Creation of PVCs can take couple of minutes on ROKS.
-```
-# oc get pvc
-NAME                  STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE
-cp4a-shared-log-pvc   Bound    pvc-573ee629-2c53-49c7-9c7a-1a0993ec7708   100Gi      RWX            ibmc-file-gold-gid   4m30s
-operator-shared-pvc   Bound    pvc-08b41ff3-2174-4d63-8bc3-4f3903cc493c   1Gi        RWX            ibmc-file-gold-gid   4m30s
-```
+
+![IBM Docs - Used sections](images/pvcs-ready.png)
+
 > **! IMPORTANT !**
-Before proceeding further make sure that the PVCs are created and bound.
+Make sure that the PVCs are created and bound before proceeding further.
 
 Get your software entitlement key from https://myibm.ibm.com/products-services/containerlibrary and set it to property _ENTITLEMENT_KEY_ for re-use in the scripts.
 
