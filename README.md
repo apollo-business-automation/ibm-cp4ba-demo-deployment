@@ -1,49 +1,74 @@
 # Installation of Cloud Pak for Business Automation on containers - Demo pattern
 
-This document contains quick notes created during installation of IBM Cloud Pak for Business Automation on ROKS - Demo deployment. The purpose is to demonstrate the procedure and final results.
+This document contains quick notes created during installation of IBM Cloud Pak for Business Automation (CP4BA) using so called _Demo deployment_. The purpose is to demonstrate the procedure and final results. The last installation was performed on September 1, 2021 with CP4BA version 21.0.2-IF001.
 
-You can find official installation documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments.
+These notes have been created using official installation documentation hanging at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-demo-deployments. The sections highlighted in red in the screenshot below show the specific sections these notes are based on. There is no major difference. It is just a consolidated one-page description of the installation using Operator Hub, complemented with additional comments.
+
+![IBM Docs - Used sections](images/ibm-docs-sections.png)
+
+Two additional methods are available in the documentation - _admin script_ and _silent mode_ (still with manual selection of capabilities) / _deployment script_. They represent valid, partially more automated alternatives. The deployment itself is at the end just piece of yaml. You can experiment on your own.
 ## Disclaimer
-This is not an official IBM documentation, absolutely no warranties, no responsibilities for anything.
-TODO
+This is not an official IBM documentation. Absolutely no warranties, no responsibility for anything. Use it on your own risk and always follow the official IBM documents.
 
-## Architecture
-TODO picture
+Please do not hesitate to create an issue here if needed. Your feedback is appreciated.
+## OpenShift clusters used for the installation
+Two types of OpenShift clusters have been tested, both version 4.7.x:
+- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud
+- "Home-made" OpenShift cluster created from scratch on top of RHEL and CoreOS virtual machines.
+
+The installation should behave the same on managed OpenShift clusters like [ROSA (Red Hat OpenShift Service on AWS)](https://aws.amazon.com/rosa/) and [Azure Red Hat OpenShift](https://azure.microsoft.com/services/openshift). Detailed testing is being in progress, with positive results so far. The only major difference actually seems to be in storage classes used for persistent volume claims which provide file systems to store data. The storage classes are always specific for particular environment and vendor. The right selection of storage classes must be performed during the installation.
 ## Pre-requisites
-TODO
-OCP cluster - ROKS or home-made
-## Types of deployment - Demo and Enterprise
-TODO
-Limitations of the demo deployment
+1) OpenShift cluster sized according with the system requirements: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements.
+1) Software entitlement key available at https://myibm.ibm.com/products-services/containerlibrary
+1) Red Hat (RHEL), CentOS, or macOS to run the installation scripts. The scripts will be communication with your OpenShift cluster using OpenShift CLI (oc), resp. kubectl. Detailed instructions are available at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment.
 
-## Installed CP4BA capabilities
-TODO
-Also what is not included
+> The hardware requirements at the link above may look pretty large for demo deployment. In our case we are using OpenShift cluster with 5 nodes running in combined mode as both master and worker. Each with 16 CPU cores, 32 GB RAM and 24 GB disk space. All the resources are far from being heavily utilized. But - only the official system requirements should be respected.
 
+![Nodes of the OpenShift cluster](images/cluster-nodes.png)
+## Types of deployment and available capabilities
+Two types of CP4BA deployments are available - _Demo_ and _Enterprise_.
+### Demo deployment
+- Intended for demonstration and evaluation purposes. Not for production, not even for development.
+- Limited set of CP4BA capabilities:
+  - IBM Business Automation Workflow - Authoring
+  - IBM FileNet Content Manager
+  - IBM Operational Decision Manager
+  - IBM Automation Decision Services
+  - IBM Automation Document Processing
+  - IBM Business Automation Insights
+  - IBM Business Automation Application
+- Simplified pre-requisites making installation easier:
+  - Uses bundled containerized DB2 database. No need to take care of creation of a database. All capabilities by default use the shared DB2 with no additional configuration effort.
+  - The same for LDAP used by CP4BA's User Management Service (UMS). It is implemented using OpenLDAP. phpLDAPadmin is also automatically installed and configured to make administration of users and groups easier if needed.
+- The pre-defined default services like OpenLDAP, phpLDAPadmin, BusyBox, Alpine etc. might have vulnerabilities and are not suitable for production.
+- Sets default credentials to make it easy to deploy, and for this reason you must not keep an Demo deployment for development or for production.
+### Enterprise deployment
+- Intended for project deployments from development to production.
+- Completely open to specific configurations depending on environment of the customer - databases, LDAP servers etc.
+- Requires more expertise and effort to install.
 ## Installation procedure
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment
+First you need to have an Red Hat (RHEL), CentOS, or macOS environment allowing you to run the scripts and communicate with the OpenShift cluster.
 
-Install oc, kubectl, podman
+Follow this link https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment to install Kubernetes/OCP CLI and podman.
 
-Create a temporary directory with whatever name to keep your artifacts for installation. Let's call the directory _cp4ba-install_.
+Create a temporary directory with whatever name your prefer to keep your artifacts for installation. Let's call the directory _cp4ba-install_.
 ```
 mkdir cp4ba-install
 cd cp4ba-install
 ```
 
-Download the TODO what is this called?
+Download the _Container Application Software for Enterprises (CASE)_ package.
 ```
-curl https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-cp-automation/3.1.0/ibm-cp-automation-3.1.0.tgz -kL -o ibm-cp-automation-3.1.0.tgz
+curl https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-cp-automation/3.1.2/ibm-cp-automation-3.1.2.tgz -kL -o ibm-cp-automation-3.1.2.tgz
 ```
 Unpack the artifacts.
 ```
-tar -xvzf ibm-cp-automation-3.1.0.tgz
+tar -xvzf ibm-cp-automation-3.1.2.tgz
 cd ibm-cp-automation/inventory/cp4aOperatorSdk/files/deploy/crs
 tar -xvzf cert-k8s-21.0.2.tar
 ```
 
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-operator-hub
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage
+The next part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-operator-hub, resp. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-preparing-operator-log-file-storage.
 
 Login to your OpenShift cluster.
 ```
@@ -57,7 +82,7 @@ oc create namespace ${NAMESPACE}
 oc project ${NAMESPACE}
 ```
 
-Now you need to make sure what storage class will be used. It is always specific to your environment - home-made ROKS (e.g. ibmc-file-gold-gid), OCP cluster (e.g. managed-nfs-storage), ROSA etc.
+Now you need to make sure what storage class will be used. It is always specific to your environment - ROKS (e.g. ibmc-file-gold-gid), home-made OCP cluster (e.g. managed-nfs-storage), ROSA etc.
 ```
 cd cert-kubernetes/descriptors
 ```
@@ -68,7 +93,7 @@ You can list available storage classes using following command.
 ```
 oc get storageclass
 ```
-Let's say we are on ROKS and the right storage class is _ibmc-file-gold-gid_.
+Let's say we are on ROKS and the right storage class for the installation is _ibmc-file-gold-gid_.
 
 To create persistent volume claims needed for the deployment, edit the yaml file used for their creation and insert your storage class name into it. So edit the _operator-shared-pvc.yaml_ file using your favorite editor and replace the <StorageClassName> and <Fast_StorageClassName> placeholders by storage classes of your choice.
 
@@ -97,14 +122,13 @@ operator-shared-pvc   Bound    pvc-08b41ff3-2174-4d63-8bc3-4f3903cc493c   1Gi   
 > **! IMPORTANT !**
 Before proceeding further make sure that the PVCs are created and bound.
 
-# TODO consolidate
 Get your software entitlement key from https://myibm.ibm.com/products-services/containerlibrary and set it to property _ENTITLEMENT_KEY_ for re-use in the scripts.
 
 ```
 export ENTITLEMENT_KEY=<YOUR_ENTITLEMENT_KEY>
 ```
 
-Generate a secret with the name admin.registrykey to pull the catalog images from the IBM Entitled Registry.
+Generate a secret with the name _admin.registrykey_ to pull the catalog images from the IBM Entitled Registry.
 ```
 kubectl create secret docker-registry admin.registrykey -n ${NAMESPACE} \
    --docker-server=cp.icr.io \
@@ -112,7 +136,7 @@ kubectl create secret docker-registry admin.registrykey -n ${NAMESPACE} \
    --docker-password="${ENTITLEMENT_KEY}"
 ```
 
-Create one more secret for IBM Business Automation Insights with the name ibm-entitlement-key with your entitlement key for the IBM Entitled Registry.
+Create one more secret for IBM Business Automation Insights with the name _ibm-entitlement-key_ with your entitlement key for the IBM Entitled Registry.
 ```
 kubectl create secret docker-registry ibm-entitlement-key -n ${NAMESPACE} \
    --docker-username=cp \
@@ -120,7 +144,7 @@ kubectl create secret docker-registry ibm-entitlement-key -n ${NAMESPACE} \
    --docker-server=cp.icr.io
 ```
 
-Create the ibm-cp4ba-privileged and ibm-cp4ba-anyuid service accounts (SA), and bind the security context constraints (SCC) to control the actions the SA can take and what it can access.
+Create the _ibm-cp4ba-privileged_ and _ibm-cp4ba-anyuid_ service accounts (SA), and bind the security context constraints (SCC) to control the actions the SA can take and what it can access.
 
 First create the yaml file.
 ```
@@ -152,7 +176,7 @@ oc adm policy add-scc-to-user privileged -z ibm-cp4ba-privileged -n ${NAMESPACE}
 oc adm policy add-scc-to-user anyuid -z ibm-cp4ba-anyuid -n ${NAMESPACE}
 ```
 
-https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-installing-operator-catalog
+Following part is based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=hub-installing-operator-catalog.
 
 Add the CatalogSource resources to Operator Hub using yaml file below. The CatalogSource resources add the _IBM Operator Catalog_ to the OperatorHub, which depends on the catalog sources for _IBM Cloud Pak for Business Automation_ and _IBM Automation Foundation Services_.
 
