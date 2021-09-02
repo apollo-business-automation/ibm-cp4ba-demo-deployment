@@ -302,15 +302,16 @@ As mentioned before, the configuration is just piece of yaml which you can revie
 
 ![Operator - Cluster configuration](images/deployment-config-yaml.png)
 
-When you are done with your configuration, click on the blue _Create_ button in the bottom to start the installation. It may take couple of hours. Very personal experience is something between 3 and 6 hours depending on environment, cloud usage etc.
+When you are done with your configuration, click on the blue _Create_ button in the bottom to start the installation. The installation may take couple of hours. Very personal experience is something between 3 and 6 hours depending on environment, cloud usage etc.
 
 Good indication of progress is live view of the pods across all namespaces in the OpenShift web console, sorted e.g. by _Created_ column.
 
 ![Operator - Cluster configuration](images/list-pods-by-created.png)
+# Review results of the installation
 
-> Wait for TODO - best final indication of finished installation.
-# Review result of the installation
-All the URLs, usernames and passwords allowing you to access installed capabilities are available in the config map of the deployment.
+![A few moments later](images/a-few-moments-later.png)
+
+After finishing of the installation, all the URLs, usernames and passwords allowing you to access installed capabilities are available in the config map of the deployment.
 
 Look into the access Config map using _OpenShift web console_:
 - In the menu on the left side click on _Workloads_ and _ConfigMaps_
