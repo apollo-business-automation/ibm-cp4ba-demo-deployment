@@ -29,7 +29,7 @@ Two types of OpenShift clusters have been tested, both version 4.7.x:
 Two types of CP4BA deployments are available - _Demo_ and _Enterprise_.
 ### Demo deployment
 - Intended for demonstration and evaluation purposes. Not for production, not even for development.
-- Limited set of CP4BA capabilities:
+- Provides following set of CP4BA capabilities:
   - IBM Business Automation Workflow - Authoring
   - IBM FileNet Content Manager
   - IBM Operational Decision Manager
@@ -37,7 +37,7 @@ Two types of CP4BA deployments are available - _Demo_ and _Enterprise_.
   - IBM Automation Document Processing
   - IBM Business Automation Insights
   - IBM Business Automation Application
-- Simplified pre-requisites making installation easier:
+- Contains embedded pre-requisites making installation easier:
   - Uses bundled containerized DB2 database. No need to take care of creation of a database. All capabilities by default use the shared DB2 with no additional configuration effort.
   - The same for LDAP used by CP4BA's User Management Service (UMS). It is implemented using OpenLDAP. phpLDAPadmin is also automatically installed and configured to make administration of users and groups easier if needed.
 - The pre-defined default services like OpenLDAP, phpLDAPadmin, BusyBox, Alpine etc. might have vulnerabilities and are not suitable for production.
