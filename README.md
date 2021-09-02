@@ -12,7 +12,7 @@ This is not an official IBM documentation. Absolutely no warranties, no responsi
 
 Please do not hesitate to create an issue here if needed. Your feedback is appreciated.
 ## OpenShift clusters used for the installation
-Two types of OpenShift clusters have been tested, both version 4.7.x:
+Two types of OpenShift clusters have been tested, both version 4.7.x (BTW it seems there are some issues on V4.8 with DB2, not confirmed):
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud
 - "Home-made" OpenShift cluster created from scratch on top of RHEL and CoreOS virtual machines
 
@@ -20,7 +20,7 @@ Two types of OpenShift clusters have been tested, both version 4.7.x:
 ## Pre-requisites
 1) OpenShift cluster sized according with the system requirements: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements.
 1) Software entitlement key available at https://myibm.ibm.com/products-services/containerlibrary
-1) Red Hat (RHEL), CentOS, or macOS to run the installation scripts. The scripts will be communication with your OpenShift cluster using OpenShift CLI (oc), resp. kubectl. Detailed instructions are available at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment.
+1) Your own Red Hat (RHEL), CentOS, or macOS to run the installation scripts. The scripts will be communication with your OpenShift cluster using OpenShift CLI (oc), resp. kubectl. Detailed instructions are available at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-preparing-demo-deployment.
 
 > The hardware requirements at the link above may look pretty large for demo deployment. In our case we are using OpenShift cluster with 5 nodes running in combined mode as both master and worker. Each with 16 CPU cores, 32 GB RAM and 24 GB disk space. All the resources are far from being heavily utilized. But - only the official system requirements should be respected.
 
@@ -358,4 +358,4 @@ Special thanks to my colleagues and friends Jan Dušek and Fadi Sandakly for  sh
 The notebook found in this project are licensed under the [Apache License 2.0](LICENSE).
 
 # Notice
-© Copyright IBM Corporation 2020.
+© Copyright IBM Corporation 2021.
