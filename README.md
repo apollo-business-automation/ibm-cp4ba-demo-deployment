@@ -335,11 +335,8 @@ This part is based on following documents:
 
 > **! WARNING !**
 > The instructions below delete also IBM Common Services. It is a complete cleanup of all underlying components also.
+> Do not forget to have the NAMESPACE variable set.
 
-Personal experience - proven method:
-- Delete your project - default cp4ba.
-- Wait for all pods in the project to be deleted.
-- In case the project will not be deleted and remains in terminated stage,  perform additional cleanup procedure:
 ```
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n ${NAMESPACE} # optional way for specific namespace
 bash <(curl -s https://raw.githubusercontent.com/IBM/ibm-common-service-operator/master/common/scripts/force-uninstall.sh) -n common-service # the main way for common services, this namespace not available on demo deployment
@@ -355,7 +352,7 @@ Technical Engagement Team - IBM CEE<br>
 Special thanks to my colleagues and friends Jan Dušek and Fadi Sandakly for  sharing their expertise, all the great support, cooperation and fun.
 
 # License
-The notebook found in this project are licensed under the [Apache License 2.0](LICENSE).
+[Apache License 2.0](LICENSE)
 
 # Notice
 © Copyright IBM Corporation 2021.
