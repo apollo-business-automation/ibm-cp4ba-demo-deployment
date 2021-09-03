@@ -334,7 +334,7 @@ This part is based on following documents:
 - https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
 
 > **! WARNING !**
-> The instructions below delete also IBM Common Services. It is a complete cleanup of all underlying components also.
+> The instructions below delete also IBM CloudPak Foundational Services.
 > Do not forget to have the NAMESPACE variable set.
 
 ```
